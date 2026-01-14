@@ -61,7 +61,6 @@ const endsIn = computed(() => formatCountdown(props.item.end_date));
   border: 1px solid var(--border);
   border-radius: var(--radius);
   transition: transform 180ms ease, border-color 180ms ease,
-    background 180ms ease;
 }
 
 .card:hover {

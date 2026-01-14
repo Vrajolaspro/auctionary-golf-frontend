@@ -6,22 +6,16 @@
           Drafts
           <span class="heroAccent">Saved locally</span>
         </h1>
-        <p class="heroSub">
-          These drafts are stored in your browser (localStorage). You can edit or delete them any time.
-        </p>
       </div>
     </section>
-
     <section class="panel">
       <div class="panelHead">
         <h2 class="h2">Your drafts</h2>
         <span class="count">{{ drafts.length }}</span>
       </div>
-
       <div v-if="drafts.length === 0" class="note">
         No drafts yet. Create one from “Create Auction” and click “Save Draft”.
       </div>
-
       <div v-else class="list">
         <div class="row" v-for="d in drafts" :key="d.id">
           <div class="left">
@@ -37,14 +31,12 @@
               End: {{ d.end_date_local || "Not set" }}
             </div>
           </div>
-
           <div class="actions">
             <button class="primarySmall" @click="editDraft(d.id)">Edit</button>
             <button class="ghostSmall dangerBtn" @click="removeDraft(d.id)">Delete</button>
           </div>
         </div>
       </div>
-
       <div class="footerRow">
         <button class="ghost" @click="goCreate">Create New Auction</button>
         <button class="ghost dangerBtn" v-if="drafts.length" @click="clearAll">
@@ -105,9 +97,11 @@ onMounted(load);
   margin: 0 auto;
   padding: 0 16px;
 }
+
 .hero {
   padding: 36px 0 18px;
 }
+
 .heroInner {
   text-align: center;
   padding: 22px 18px;
@@ -119,11 +113,13 @@ onMounted(load);
   );
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
 .heroTitle {
   margin: 0;
   font-size: 38px;
   font-weight: 900;
 }
+
 .heroAccent {
   display: block;
   margin-top: 6px;
@@ -136,13 +132,6 @@ onMounted(load);
   background-clip: text;
   color: transparent;
   font-weight: 900;
-}
-.heroSub {
-  max-width: 760px;
-  margin: 10px auto 0;
-  color: rgba(233, 238, 252, 0.7);
-  line-height: 1.5;
-  font-size: 13px;
 }
 
 .panel {
@@ -259,6 +248,7 @@ onMounted(load);
   font-weight: 900;
   cursor: pointer;
 }
+
 .ghostSmall {
   padding: 10px 12px;
   border-radius: 14px;
@@ -267,6 +257,7 @@ onMounted(load);
   color: rgba(233, 238, 252, 0.85);
   cursor: pointer;
 }
+
 .dangerBtn {
   border-color: rgba(255, 107, 107, 0.35);
 }

@@ -19,11 +19,8 @@
         Register
       </button>
     </div>
-
     <div v-if="error" class="error">{{ error }}</div>
     <div v-if="ok" class="ok">{{ ok }}</div>
-
-    <!-- LOGIN -->
     <form v-if="active === 'login'" class="form" @submit.prevent="doLogin">
       <label class="label">Email</label>
       <input
@@ -32,7 +29,6 @@
         type="email"
         autocomplete="email"
       />
-
       <label class="label">Password</label>
       <input
         class="input"
@@ -40,13 +36,10 @@
         type="password"
         autocomplete="current-password"
       />
-
       <button class="primary" type="submit" :disabled="loading">
         {{ loading ? "Signing in..." : "Sign In" }}
       </button>
     </form>
-
-    <!-- REGISTER -->
     <form v-else class="form" @submit.prevent="doRegister">
       <div class="grid2">
         <div>
@@ -58,7 +51,6 @@
           <input class="input" v-model="lastName" autocomplete="family-name" />
         </div>
       </div>
-
       <label class="label">Email</label>
       <input
         class="input"
@@ -66,7 +58,6 @@
         type="email"
         autocomplete="email"
       />
-
       <label class="label">Password</label>
       <input
         class="input"
@@ -74,12 +65,10 @@
         type="password"
         autocomplete="new-password"
       />
-
       <div class="hint">
         Password must be 8–30 chars and include uppercase, lowercase, number,
         and symbol.
       </div>
-
       <button class="primary" type="submit" :disabled="loading">
         {{ loading ? "Creating..." : "Create Account" }}
       </button>
@@ -93,11 +82,9 @@ import ModalShell from "./ModalShell.vue";
 import { login, register } from "../services/auth";
 
 const props = defineProps({
-  startTab: { type: String, default: "login" }, // "login" | "register"
+  startTab: { type: String, default: "login" },
 });
-
 const emit = defineEmits(["close", "authed"]);
-
 const active = ref(props.startTab);
 
 watch(
@@ -111,10 +98,8 @@ watch(
 const loading = ref(false);
 const error = ref("");
 const ok = ref("");
-
 const loginEmail = ref("");
 const loginPassword = ref("");
-
 const firstName = ref("");
 const lastName = ref("");
 const regEmail = ref("");
@@ -151,8 +136,6 @@ async function doRegister() {
       regEmail.value.trim(),
       regPassword.value
     );
-
-    // UX: after registering, switch to login and prefill email
     ok.value = "Account created. Please sign in.";
     active.value = "login";
     loginEmail.value = regEmail.value.trim();
@@ -172,6 +155,7 @@ async function doRegister() {
   gap: 10px;
   margin-bottom: 14px;
 }
+
 .tab {
   flex: 1;
   padding: 10px 12px;
@@ -182,6 +166,7 @@ async function doRegister() {
   cursor: pointer;
   font-weight: 800;
 }
+
 .tab.active {
   border-color: rgba(46, 204, 113, 0.3);
   background: linear-gradient(
@@ -203,6 +188,7 @@ async function doRegister() {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
+
 @media (max-width: 520px) {
   .grid2 {
     grid-template-columns: 1fr;
@@ -224,6 +210,7 @@ async function doRegister() {
   color: var(--text);
   outline: none;
 }
+
 .input:focus {
   border-color: rgba(46, 204, 113, 0.35);
   box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
@@ -243,6 +230,7 @@ async function doRegister() {
   font-weight: 900;
   cursor: pointer;
 }
+
 .primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -262,6 +250,7 @@ async function doRegister() {
   color: rgba(255, 220, 220, 0.95);
   margin-bottom: 12px;
 }
+
 .ok {
   padding: 10px 12px;
   border-radius: 14px;

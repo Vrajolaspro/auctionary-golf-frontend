@@ -6,10 +6,6 @@
           Auctionary
           <span class="heroAccent">Golf-Inspired Auctions</span>
         </h1>
-        <p class="heroSub">
-          A white-label auction template with a premium golf-style brand.
-          Listings come directly from the API.
-        </p>
         <form class="heroSearch" @submit.prevent="applySearch">
           <span class="searchIcon">⌕</span>
           <input
@@ -154,9 +150,11 @@ onMounted(load);
   margin: 0 auto;
   padding: 0 16px;
 }
+
 .hero {
   padding: 56px 0 22px;
 }
+
 .heroInner {
   text-align: center;
   padding: 26px 18px 22px;
@@ -168,12 +166,14 @@ onMounted(load);
   );
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
 .heroTitle {
   margin: 0;
   font-size: 44px;
   font-weight: 900;
   letter-spacing: 0.2px;
 }
+
 .heroAccent {
   display: block;
   margin-top: 6px;
@@ -186,12 +186,7 @@ onMounted(load);
   background-clip: text;
   color: transparent;
 }
-.heroSub {
-  max-width: 760px;
-  margin: 14px auto 0;
-  color: rgba(233, 238, 252, 0.7);
-  line-height: 1.5;
-}
+
 .heroSearch {
   max-width: 740px;
   margin: 18px auto 0;
@@ -204,6 +199,7 @@ onMounted(load);
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.14);
 }
+
 .heroSellBtn {
   max-width: 740px;
   width: 100%;
@@ -221,15 +217,18 @@ onMounted(load);
   font-weight: 900;
   cursor: pointer;
 }
+
 .heroSellBtn:hover {
   box-shadow: 0 16px 40px rgba(46, 204, 113, 0.18);
 }
+
 .searchIcon {
   position: absolute;
   left: 16px;
   color: rgba(233, 238, 252, 0.45);
   font-weight: 900;
 }
+
 .searchInput {
   flex: 1;
   min-width: 0;
@@ -240,9 +239,11 @@ onMounted(load);
   font-size: 15px;
   padding: 10px 0;
 }
+
 .searchInput::placeholder {
   color: rgba(233, 238, 252, 0.45);
 }
+
 .searchBtn {
   padding: 12px 16px;
   border-radius: 14px;
@@ -256,13 +257,16 @@ onMounted(load);
   font-weight: 800;
   cursor: pointer;
 }
+
 .searchBtn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
 .content {
   padding: 18px 0 0;
 }
+
 .sectionHead {
   display: flex;
   justify-content: space-between;
@@ -271,26 +275,31 @@ onMounted(load);
   flex-wrap: wrap;
   margin-bottom: 14px;
 }
+
 .sectionTitle {
   margin: 0;
   font-size: 22px;
   font-weight: 900;
 }
+
 .sectionSub {
   margin: 6px 0 0;
   color: rgba(233, 238, 252, 0.65);
   font-size: 13px;
 }
+
 .mini {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
 }
+
 .miniLabel {
   font-size: 13px;
   color: rgba(233, 238, 252, 0.7);
 }
+
 .select {
   margin-left: 8px;
   padding: 9px 10px;
@@ -299,6 +308,7 @@ onMounted(load);
   background: rgba(255, 255, 255, 0.03);
   color: var(--text);
 }
+
 .ghost {
   padding: 10px 14px;
   border-radius: 14px;
@@ -307,15 +317,18 @@ onMounted(load);
   color: rgba(233, 238, 252, 0.85);
   cursor: pointer;
 }
+
 .ghost:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
 .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
 }
+
 @media (max-width: 920px) {
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -324,6 +337,7 @@ onMounted(load);
     font-size: 38px;
   }
 }
+
 @media (max-width: 560px) {
   .grid {
     grid-template-columns: 1fr;
@@ -340,16 +354,19 @@ onMounted(load);
     width: 100%;
   }
 }
+
 .loading {
   padding: 14px;
   color: rgba(233, 238, 252, 0.8);
 }
+
 .empty {
   padding: 16px;
   border-radius: 18px;
   border: 1px dashed rgba(255, 255, 255, 0.16);
   color: rgba(233, 238, 252, 0.75);
 }
+
 .error {
   padding: 12px;
   border-radius: 16px;

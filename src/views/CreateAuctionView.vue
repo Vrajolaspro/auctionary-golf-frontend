@@ -8,12 +8,6 @@
             {{ draftId ? "Editing draft" : "List your item" }}
           </span>
         </h1>
-        <p class="heroSub">
-          {{ draftId
-            ? "This is a local draft (not posted to the API yet)."
-            : "Enter the details below and publish your auction." }}
-        </p>
-
         <div class="heroActions">
           <button class="ghost" type="button" @click="goDrafts">
             View Drafts
@@ -21,38 +15,31 @@
         </div>
       </div>
     </section>
-
     <section class="panel">
       <div v-if="!isLoggedIn" class="note">
         You must be signed in to create an auction.
         <div class="hint">You can still save drafts while signed out.</div>
       </div>
-
       <form class="form" @submit.prevent="submit">
         <label class="label">Name</label>
         <input class="input" v-model="name" placeholder="e.g. TaylorMade SIM2 Max Driver" />
-
         <label class="label">Description</label>
         <textarea
           class="input textarea"
           v-model="description"
           placeholder="Describe condition, specs, collection/delivery, etc."
         />
-
         <div class="grid2">
           <div>
             <label class="label">Starting bid (£)</label>
             <input class="input" v-model="startingBid" type="number" min="0" step="1" />
           </div>
-
           <div>
             <label class="label">End date & time</label>
             <input class="input" v-model="endDateLocal" type="datetime-local" />
             <div class="hint">Must be in the future when publishing.</div>
           </div>
         </div>
-
-        <!-- Draft buttons -->
         <div class="rowBtns">
           <button class="ghost" type="button" @click="saveDraft">
             Save Draft
@@ -66,14 +53,11 @@
             Delete Draft
           </button>
         </div>
-
         <div v-if="error" class="error">{{ error }}</div>
         <div v-if="ok" class="ok">{{ ok }}</div>
-
         <button class="primary" type="submit" :disabled="loading || !isLoggedIn">
           {{ loading ? "Creating..." : "Create Auction" }}
         </button>
-
         <div v-if="!isLoggedIn" class="hint">
           Sign in to publish to the API. Draft saving works without signing in.
         </div>
@@ -90,20 +74,15 @@ import { getDraft, upsertDraft, deleteDraft } from "../services/drafts";
 
 const router = useRouter();
 const route = useRoute();
-
 const isLoggedIn = computed(() => !!localStorage.getItem("session_token"));
-
 const name = ref("");
 const description = ref("");
 const startingBid = ref("");
-const endDateLocal = ref(""); // yyyy-mm-ddThh:mm
-
+const endDateLocal = ref("");
 const loading = ref(false);
 const error = ref("");
 const ok = ref("");
-
-// draft mode
-const draftId = ref(""); // empty = not editing a draft
+const draftId = ref("");
 
 function toMsFromDatetimeLocal(v) {
   const d = new Date(v);
@@ -114,19 +93,15 @@ function toMsFromDatetimeLocal(v) {
 function loadDraftIfAny() {
   const id = typeof route.query.draft === "string" ? route.query.draft : "";
   draftId.value = id;
-
   error.value = "";
   ok.value = "";
-
   if (!id) return;
-
   const d = getDraft(id);
   if (!d) {
     error.value = "Draft not found (it may have been deleted).";
     draftId.value = "";
     return;
   }
-
   name.value = d.name || "";
   description.value = d.description || "";
   startingBid.value = d.starting_bid ?? "";
@@ -137,7 +112,6 @@ function loadDraftIfAny() {
 function saveDraft() {
   error.value = "";
   ok.value = "";
-
   const saved = upsertDraft({
     id: draftId.value || undefined,
     name: name.value,
@@ -145,24 +119,19 @@ function saveDraft() {
     starting_bid: startingBid.value,
     end_date_local: endDateLocal.value,
   });
-
   draftId.value = saved.id;
   ok.value = "Draft saved locally.";
-  // keep URL in sync so refresh keeps draft context
   router.replace({ path: "/create", query: { draft: saved.id } });
 }
 
 function deleteThisDraft() {
   if (!draftId.value) return;
   deleteDraft(draftId.value);
-
-  // reset form
   draftId.value = "";
   name.value = "";
   description.value = "";
   startingBid.value = "";
   endDateLocal.value = "";
-
   ok.value = "Draft deleted.";
   router.replace({ path: "/create" });
 }
@@ -174,23 +143,19 @@ function goDrafts() {
 async function submit() {
   error.value = "";
   ok.value = "";
-
   const n = name.value.trim();
   const d = description.value.trim();
   const sb = Math.floor(Number(startingBid.value));
   const endMs = toMsFromDatetimeLocal(endDateLocal.value);
-
   if (!isLoggedIn.value) {
     error.value = "Sign in to publish. (You can still Save Draft.)";
     return;
   }
-
   if (!n) return (error.value = "name is required.");
   if (!d) return (error.value = "description is required.");
   if (!Number.isFinite(sb) || sb < 0) return (error.value = "starting_bid is invalid.");
   if (!endMs) return (error.value = "end_date is invalid.");
   if (endMs <= Date.now()) return (error.value = "end_date must be in the future.");
-
   loading.value = true;
   try {
     const res = await api.post("/item", {
@@ -199,16 +164,12 @@ async function submit() {
       starting_bid: sb,
       end_date: endMs,
     });
-
     const itemId = res?.data?.item_id;
     ok.value = "Auction created!";
-
-    // ✅ If it was a draft, delete it now (mail-client style: sent -> remove draft)
     if (draftId.value) {
       deleteDraft(draftId.value);
       draftId.value = "";
     }
-
     if (itemId) router.push(`/auction/${itemId}`);
   } catch (e) {
     error.value =
@@ -235,6 +196,7 @@ watch(() => route.query.draft, loadDraftIfAny);
 .hero {
   padding: 36px 0 18px;
 }
+
 .heroInner {
   text-align: center;
   padding: 22px 18px;
@@ -246,11 +208,13 @@ watch(() => route.query.draft, loadDraftIfAny);
   );
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
 .heroTitle {
   margin: 0;
   font-size: 38px;
   font-weight: 900;
 }
+
 .heroAccent {
   display: block;
   margin-top: 6px;
@@ -264,13 +228,7 @@ watch(() => route.query.draft, loadDraftIfAny);
   color: transparent;
   font-weight: 900;
 }
-.heroSub {
-  max-width: 760px;
-  margin: 10px auto 0;
-  color: rgba(233, 238, 252, 0.7);
-  line-height: 1.5;
-  font-size: 13px;
-}
+
 .heroActions {
   margin-top: 14px;
   display: flex;
@@ -297,6 +255,7 @@ watch(() => route.query.draft, loadDraftIfAny);
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
+
 @media (max-width: 760px) {
   .grid2 {
     grid-template-columns: 1fr;
@@ -318,10 +277,12 @@ watch(() => route.query.draft, loadDraftIfAny);
   color: var(--text);
   outline: none;
 }
+
 .input:focus {
   border-color: rgba(46, 204, 113, 0.35);
   box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
 }
+
 .textarea {
   min-height: 110px;
   resize: vertical;
@@ -348,10 +309,12 @@ watch(() => route.query.draft, loadDraftIfAny);
   font-weight: 900;
   cursor: pointer;
 }
+
 .primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
 .primary:hover {
   box-shadow: 0 16px 40px rgba(46, 204, 113, 0.18);
 }
@@ -364,6 +327,7 @@ watch(() => route.query.draft, loadDraftIfAny);
   color: rgba(233, 238, 252, 0.85);
   cursor: pointer;
 }
+
 .dangerBtn {
   border-color: rgba(255, 107, 107, 0.35);
 }
@@ -388,6 +352,7 @@ watch(() => route.query.draft, loadDraftIfAny);
   background: rgba(255, 107, 107, 0.1);
   color: rgba(255, 220, 220, 0.95);
 }
+
 .ok {
   padding: 12px;
   border-radius: 16px;

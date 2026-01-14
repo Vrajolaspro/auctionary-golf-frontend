@@ -13,7 +13,6 @@
             ✕
           </button>
         </header>
-
         <div class="body">
           <slot />
         </div>
@@ -41,6 +40,7 @@ defineEmits(["close"]);
   padding: 18px;
   z-index: 999;
 }
+
 .modal {
   width: min(520px, 100%);
   border-radius: 22px;
@@ -48,6 +48,7 @@ defineEmits(["close"]);
   background: rgba(10, 14, 24, 0.92);
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
 }
+
 .head {
   padding: 14px 16px;
   display: flex;
@@ -55,11 +56,13 @@ defineEmits(["close"]);
   justify-content: space-between;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
+
 .title {
   margin: 0;
   font-size: 16px;
   font-weight: 900;
 }
+
 .x {
   width: 36px;
   height: 36px;
@@ -69,9 +72,11 @@ defineEmits(["close"]);
   color: rgba(233, 238, 252, 0.85);
   cursor: pointer;
 }
+
 .x:hover {
   border-color: rgba(46, 204, 113, 0.35);
 }
+
 .body {
   padding: 16px;
 }
