@@ -27,16 +27,19 @@ export async function login(email, password) {
 }
 
 export async function register(first_name, last_name, email, password) {
-  const res = await api.post("/users", { first_name, last_name, email, password });
+  const res = await api.post("/users", {
+    first_name,
+    last_name,
+    email,
+    password,
+  });
   return res.data;
 }
 
-// ✅ Always clear local session, even if server logout fails
 export async function logout() {
   try {
     await api.post("/logout");
   } catch (e) {
-    // ignore API failure (server down / token invalid etc.)
   } finally {
     clearSession();
   }

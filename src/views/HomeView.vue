@@ -65,6 +65,8 @@
 import { ref, onMounted } from "vue";
 import { api } from "../services/api";
 import AuctionCard from "../components/AuctionCard.vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
 const items = ref([]);
 const loading = ref(false);
 const error = ref("");
@@ -114,6 +116,7 @@ function resetAndLoad() {
 }
 
 function goToCreateAuction() {
+  router.push("/create");
 }
 
 onMounted(load);

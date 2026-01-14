@@ -86,6 +86,15 @@ onMounted(refreshSession);
 </script>
 
 <style scoped>
+.app{
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main{
+  flex: 1;
+}
 .navWrap{
   position: sticky;
   top: 0;
@@ -146,7 +155,6 @@ onMounted(refreshSession);
   box-shadow: 0 12px 30px rgba(46,204,113,.18);
 }
 .footer{
-  margin-top: 56px;
   border-top: 1px solid rgba(255,255,255,0.08);
   background: rgba(8, 12, 22, 0.35);
 }
