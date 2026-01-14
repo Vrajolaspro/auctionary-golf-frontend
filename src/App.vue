@@ -2,30 +2,87 @@
   <div class="app">
     <header class="navWrap">
       <nav class="nav">
-        <div class="brand">
+        <div class="brand" @click="goHome" style="cursor:pointer">
           <div class="logo">⛳</div>
           <div class="brandText">
             <div class="brandTitle">Auctionary</div>
             <div class="brandSub">Premium auctions • golf-inspired theme</div>
           </div>
         </div>
+
         <div class="navActions">
-          <button class="btnGhost" type="button">Sign In</button>
-          <button class="btnPrimary" type="button">Register</button>
+          <template v-if="!session.isLoggedIn">
+            <button class="btnGhost" type="button" @click="openAuth('login')">Sign In</button>
+            <button class="btnPrimary" type="button" @click="openAuth('register')">Register</button>
+          </template>
+
+          <template v-else>
+            <div class="who">User #{{ session.userId }}</div>
+            <button class="btnGhost" type="button" @click="doLogout">Logout</button>
+          </template>
         </div>
       </nav>
     </header>
+
     <main>
       <router-view />
     </main>
+
     <footer class="footer">
       <div class="footerInner">
         <div>© 2026 Auctionary</div>
         <div class="muted">Golf-inspired branding • generic auction template</div>
       </div>
     </footer>
+
+    <AuthModal
+      v-if="authOpen"
+      :startTab="authTab"
+      @close="authOpen = false"
+      @authed="refreshSession"
+    />
   </div>
 </template>
+
+<script setup>
+import { onMounted, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import AuthModal from "./components/AuthModal.vue";
+import { getSession, logout } from "./services/auth";
+
+const router = useRouter();
+
+const session = reactive({
+  isLoggedIn: false,
+  userId: null,
+});
+
+const authOpen = ref(false);
+const authTab = ref("login");
+
+function refreshSession() {
+  const s = getSession();
+  session.isLoggedIn = s.isLoggedIn;
+  session.userId = s.userId;
+}
+
+function openAuth(tab) {
+  authTab.value = tab;
+  authOpen.value = true;
+}
+
+async function doLogout() {
+  await logout();
+  refreshSession();
+  router.push("/");
+}
+
+function goHome() {
+  router.push("/");
+}
+
+onMounted(refreshSession);
+</script>
 
 <style scoped>
 .navWrap{
@@ -56,6 +113,16 @@
 .brandTitle{ font-weight: 800; letter-spacing: .2px; }
 .brandSub{ font-size: 12px; color: rgba(233,238,252,.65); }
 .navActions{ display:flex; align-items:center; gap: 10px; }
+
+.who{
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.03);
+  color: rgba(233,238,252,.80);
+  font-size: 13px;
+}
+
 .btnGhost{
   padding: 10px 14px;
   border-radius: 999px;
@@ -92,8 +159,4 @@
   flex-wrap: wrap;
 }
 .muted{ color: rgba(233,238,252,.60); font-size: 13px; }
-
-@media (min-width: 860px){
-  .navLinks{ display:flex; }
-}
 </style>
