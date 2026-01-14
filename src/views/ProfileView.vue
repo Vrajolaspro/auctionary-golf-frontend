@@ -9,12 +9,6 @@
           </span>
           <span class="heroAccent" v-else>My Account</span>
         </h1>
-        <p class="heroSub" v-if="profile">
-          User #{{ profile.user_id }} • Manage your auctions and activity
-        </p>
-        <p class="heroSub" v-else>
-          View your selling, bidding, and ended auctions.
-        </p>
       </div>
     </section>
     <div v-if="error" class="error">
@@ -159,14 +153,6 @@ onMounted(load);
   background-clip: text;
   color: transparent;
   font-weight: 900;
-}
-
-.heroSub {
-  max-width: 760px;
-  margin: 10px auto 0;
-  color: rgba(233, 238, 252, 0.7);
-  line-height: 1.5;
-  font-size: 13px;
 }
 
 .panel {
