@@ -7,9 +7,7 @@
           <h1 class="title">{{ item?.name || "Auction" }}</h1>
           <p class="sub" v-if="item">
             Sold by
-            <span class="accent"
-              >{{ item.first_name }} {{ item.last_name }}</span
-            >
+            <span class="accent">{{ item.first_name }} {{ item.last_name }}</span>
             • Ends
             <span :class="{ danger: endsIn === 'Ended' }">{{ endsIn }}</span>
           </p>
@@ -40,18 +38,14 @@
       </div>
       <div v-if="error" class="error">
         {{ error }}
-        <button class="ghost" @click="loadAll" :disabled="loading">
-          Retry
-        </button>
+        <button class="ghost" @click="loadAll" :disabled="loading">Retry</button>
       </div>
       <div v-if="loading" class="loading">Loading auction…</div>
     </section>
     <section class="panel" v-if="item">
       <h2 class="h2">Place a Bid</h2>
       <div v-if="!isLoggedIn" class="note">Sign in to place a bid.</div>
-      <div v-else-if="isSeller" class="note">
-        You can’t bid on your own auction.
-      </div>
+      <div v-else-if="isSeller" class="note">You can’t bid on your own auction.</div>
       <div v-else-if="endsIn === 'Ended'" class="note">
         Auction has ended. Bidding is closed.
       </div>
@@ -64,15 +58,13 @@
           step="1"
           placeholder="Enter bid amount (whole number)"
         />
-        <button class="primary" type="submit" :disabled="actionLoading">
+        <button class="primary" type="submit" :disabled="bidLoading">
           Place Bid
         </button>
       </form>
-      <div class="hint" v-if="item">
-        Must be higher than current: £{{ item.current_bid }}
-      </div>
-      <div v-if="actionError" class="errorSmall">{{ actionError }}</div>
-      <div v-if="actionOk" class="okSmall">{{ actionOk }}</div>
+      <div class="hint" v-if="item">Must be higher than current: £{{ item.current_bid }}</div>
+      <div v-if="bidError" class="msg errorMsg">{{ bidError }}</div>
+      <div v-if="bidOk" class="msg okMsg">{{ bidOk }}</div>
     </section>
     <section class="panel" v-if="item">
       <h2 class="h2">Bid History</h2>
@@ -83,9 +75,7 @@
             <div class="rowTitle">£{{ b.amount }}</div>
             <div class="rowSub">{{ b.first_name }} {{ b.last_name }}</div>
           </div>
-          <div class="rowRight">
-            {{ formatTime(b.timestamp) }}
-          </div>
+          <div class="rowRight">{{ formatTime(b.timestamp) }}</div>
         </div>
       </div>
     </section>
@@ -114,33 +104,31 @@
               v-model="answers[q.question_id]"
               placeholder="Write an answer…"
             />
-            <button class="primary" type="submit" :disabled="actionLoading">
+            <button class="primary" type="submit" :disabled="answerLoading">
               Answer
             </button>
           </form>
         </div>
       </div>
+      <div v-if="answerError" class="msg errorMsg">{{ answerError }}</div>
+      <div v-if="answerOk" class="msg okMsg">{{ answerOk }}</div>
       <h3 class="h3">Ask a Question</h3>
       <div v-if="!isLoggedIn" class="note">Sign in to ask a question.</div>
-      <div v-else-if="isSeller" class="note">
-        You can’t ask questions on your own auction.
-      </div>
+      <div v-else-if="isSeller" class="note">You can’t ask questions on your own auction.</div>
       <form v-else class="formRow" @submit.prevent="askQuestion">
-        <input
-          class="input"
-          v-model="questionText"
-          placeholder="Type your question…"
-        />
-        <button class="primary" type="submit" :disabled="actionLoading">
+        <input class="input" v-model="questionText" placeholder="Type your question…" />
+        <button class="primary" type="submit" :disabled="questionLoading">
           Ask
         </button>
       </form>
+      <div v-if="questionError" class="msg errorMsg">{{ questionError }}</div>
+      <div v-if="questionOk" class="msg okMsg">{{ questionOk }}</div>
     </section>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { api } from "../services/api";
 
@@ -152,9 +140,15 @@ const bids = ref([]);
 const questions = ref([]);
 const loading = ref(false);
 const error = ref("");
-const actionLoading = ref(false);
-const actionError = ref("");
-const actionOk = ref("");
+const bidLoading = ref(false);
+const bidError = ref("");
+const bidOk = ref("");
+const questionLoading = ref(false);
+const questionError = ref("");
+const questionOk = ref("");
+const answerLoading = ref(false);
+const answerError = ref("");
+const answerOk = ref("");
 const bidAmount = ref("");
 const questionText = ref("");
 const answers = ref({});
@@ -217,93 +211,89 @@ async function loadAll() {
     await Promise.all([loadItem(), loadBids(), loadQuestions()]);
   } catch (e) {
     error.value =
-      e?.response?.data?.error_message ||
-      e?.message ||
-      "Failed to load auction.";
+      e?.response?.data?.error_message || e?.message || "Failed to load auction.";
   } finally {
     loading.value = false;
   }
 }
 
 async function placeBid() {
-  actionError.value = "";
-  actionOk.value = "";
-
+  bidError.value = "";
+  bidOk.value = "";
   const amt = Number(bidAmount.value);
   if (!Number.isFinite(amt) || Math.floor(amt) !== amt || amt <= 0) {
-    actionError.value = "Bid must be a whole number greater than 0.";
+    bidError.value = "Bid must be a whole number greater than 0.";
     return;
   }
-
-  actionLoading.value = true;
+  bidLoading.value = true;
   try {
     await api.post(`/item/${routeId.value}/bid`, { amount: amt });
-    actionOk.value = "Bid placed!";
+    bidOk.value = "Bid placed!";
     bidAmount.value = "";
     await loadAll();
   } catch (e) {
-    actionError.value =
+    bidError.value =
       e?.response?.data?.error_message ||
       (e?.response?.status === 401 ? "You must be logged in." : "") ||
       e?.message ||
       "Failed to place bid.";
   } finally {
-    actionLoading.value = false;
+    bidLoading.value = false;
   }
 }
 
 async function askQuestion() {
-  actionError.value = "";
-  actionOk.value = "";
-
+  questionError.value = "";
+  questionOk.value = "";
   const text = questionText.value.trim();
   if (!text) {
-    actionError.value = "Question cannot be empty.";
+    questionError.value = "Question cannot be empty.";
     return;
   }
-
-  actionLoading.value = true;
+  questionLoading.value = true;
   try {
     await api.post(`/item/${routeId.value}/question`, { question_text: text });
-    actionOk.value = "Question submitted!";
+    questionOk.value = "Question submitted!";
     questionText.value = "";
     await loadQuestions();
   } catch (e) {
-    actionError.value =
+    questionError.value =
       e?.response?.data?.error_message ||
       (e?.response?.status === 401 ? "You must be logged in." : "") ||
       e?.message ||
       "Failed to submit question.";
   } finally {
-    actionLoading.value = false;
+    questionLoading.value = false;
   }
 }
 
 async function answerQuestion(questionId) {
-  actionError.value = "";
-  actionOk.value = "";
-
+  answerError.value = "";
+  answerOk.value = "";
   const text = (answers.value[questionId] || "").trim();
   if (!text) {
-    actionError.value = "Answer cannot be empty.";
+    answerError.value = "Answer cannot be empty.";
     return;
   }
-
-  actionLoading.value = true;
+  answerLoading.value = true;
   try {
     await api.post(`/question/${questionId}`, { answer_text: text });
-    actionOk.value = "Answer posted!";
+    answerOk.value = "Answer posted!";
     answers.value[questionId] = "";
     await loadQuestions();
   } catch (e) {
-    actionError.value =
+    answerError.value =
       e?.response?.data?.error_message ||
       e?.message ||
       "Failed to post answer.";
   } finally {
-    actionLoading.value = false;
+    answerLoading.value = false;
   }
 }
+
+onMounted(() => {
+  loadAll();
+});
 </script>
 
 <style scoped>
@@ -578,16 +568,25 @@ async function answerQuestion(questionId) {
   gap: 10px;
   margin-top: 12px;
 }
-.errorSmall {
+
+.msg {
   margin-top: 10px;
-  color: rgba(255, 107, 107, 0.95);
+  padding: 10px 12px;
+  border-radius: 14px;
   font-size: 13px;
+  font-weight: 800;
 }
-.okSmall {
-  margin-top: 10px;
-  color: rgba(46, 204, 113, 0.95);
-  font-size: 13px;
+.errorMsg {
+  border: 1px solid rgba(255, 107, 107, 0.35);
+  background: rgba(255, 107, 107, 0.1);
+  color: rgba(255, 220, 220, 0.95);
 }
+.okMsg {
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  background: rgba(46, 204, 113, 0.1);
+  color: rgba(210, 255, 230, 0.95);
+}
+
 .danger {
   color: rgba(255, 107, 107, 0.95);
 }
