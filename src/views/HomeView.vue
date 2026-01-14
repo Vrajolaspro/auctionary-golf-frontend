@@ -26,6 +26,9 @@
         <button class="heroSellBtn" type="button" @click="goToCreateAuction">
           Create Auction
         </button>
+        <button class="heroSellBtn" type="button" @click="goToDrafts" style="margin-top:10px;">
+          View Drafts
+        </button>
       </div>
     </section>
     <section class="content">
@@ -136,6 +139,10 @@ function resetAndLoad() {
 
 function goToCreateAuction() {
   router.push("/create");
+}
+
+function goToDrafts() {
+  router.push("/drafts");
 }
 
 onMounted(load);

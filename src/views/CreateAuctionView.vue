@@ -4,24 +4,33 @@
       <div class="heroInner">
         <h1 class="heroTitle">
           Create Auction
-          <span class="heroAccent">List your item</span>
+          <span class="heroAccent">
+            {{ draftId ? "Editing draft" : "List your item" }}
+          </span>
         </h1>
-        <p class="heroSub">Enter the details below and publish your auction.</p>
+        <p class="heroSub">
+          {{ draftId
+            ? "This is a local draft (not posted to the API yet)."
+            : "Enter the details below and publish your auction." }}
+        </p>
+
+        <div class="heroActions">
+          <button class="ghost" type="button" @click="goDrafts">
+            View Drafts
+          </button>
+        </div>
       </div>
     </section>
 
     <section class="panel">
       <div v-if="!isLoggedIn" class="note">
         You must be signed in to create an auction.
+        <div class="hint">You can still save drafts while signed out.</div>
       </div>
 
-      <form v-else class="form" @submit.prevent="submit">
+      <form class="form" @submit.prevent="submit">
         <label class="label">Name</label>
-        <input
-          class="input"
-          v-model="name"
-          placeholder="e.g. TaylorMade SIM2 Max Driver"
-        />
+        <input class="input" v-model="name" placeholder="e.g. TaylorMade SIM2 Max Driver" />
 
         <label class="label">Description</label>
         <textarea
@@ -33,39 +42,54 @@
         <div class="grid2">
           <div>
             <label class="label">Starting bid (£)</label>
-            <input
-              class="input"
-              v-model="startingBid"
-              type="number"
-              min="0"
-              step="1"
-            />
+            <input class="input" v-model="startingBid" type="number" min="0" step="1" />
           </div>
 
           <div>
             <label class="label">End date & time</label>
             <input class="input" v-model="endDateLocal" type="datetime-local" />
-            <div class="hint">Must be in the future.</div>
+            <div class="hint">Must be in the future when publishing.</div>
           </div>
+        </div>
+
+        <!-- Draft buttons -->
+        <div class="rowBtns">
+          <button class="ghost" type="button" @click="saveDraft">
+            Save Draft
+          </button>
+          <button
+            v-if="draftId"
+            class="ghost dangerBtn"
+            type="button"
+            @click="deleteThisDraft"
+          >
+            Delete Draft
+          </button>
         </div>
 
         <div v-if="error" class="error">{{ error }}</div>
         <div v-if="ok" class="ok">{{ ok }}</div>
 
-        <button class="primary" type="submit" :disabled="loading">
+        <button class="primary" type="submit" :disabled="loading || !isLoggedIn">
           {{ loading ? "Creating..." : "Create Auction" }}
         </button>
+
+        <div v-if="!isLoggedIn" class="hint">
+          Sign in to publish to the API. Draft saving works without signing in.
+        </div>
       </form>
     </section>
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
-import { useRouter } from "vue-router";
+import { computed, onMounted, ref, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { api } from "../services/api";
+import { getDraft, upsertDraft, deleteDraft } from "../services/drafts";
 
 const router = useRouter();
+const route = useRoute();
 
 const isLoggedIn = computed(() => !!localStorage.getItem("session_token"));
 
@@ -78,11 +102,73 @@ const loading = ref(false);
 const error = ref("");
 const ok = ref("");
 
+// draft mode
+const draftId = ref(""); // empty = not editing a draft
+
 function toMsFromDatetimeLocal(v) {
-  // datetime-local string is interpreted as local time by Date()
   const d = new Date(v);
   const ms = d.getTime();
   return Number.isFinite(ms) ? ms : null;
+}
+
+function loadDraftIfAny() {
+  const id = typeof route.query.draft === "string" ? route.query.draft : "";
+  draftId.value = id;
+
+  error.value = "";
+  ok.value = "";
+
+  if (!id) return;
+
+  const d = getDraft(id);
+  if (!d) {
+    error.value = "Draft not found (it may have been deleted).";
+    draftId.value = "";
+    return;
+  }
+
+  name.value = d.name || "";
+  description.value = d.description || "";
+  startingBid.value = d.starting_bid ?? "";
+  endDateLocal.value = d.end_date_local || "";
+  ok.value = "Draft loaded.";
+}
+
+function saveDraft() {
+  error.value = "";
+  ok.value = "";
+
+  const saved = upsertDraft({
+    id: draftId.value || undefined,
+    name: name.value,
+    description: description.value,
+    starting_bid: startingBid.value,
+    end_date_local: endDateLocal.value,
+  });
+
+  draftId.value = saved.id;
+  ok.value = "Draft saved locally.";
+  // keep URL in sync so refresh keeps draft context
+  router.replace({ path: "/create", query: { draft: saved.id } });
+}
+
+function deleteThisDraft() {
+  if (!draftId.value) return;
+  deleteDraft(draftId.value);
+
+  // reset form
+  draftId.value = "";
+  name.value = "";
+  description.value = "";
+  startingBid.value = "";
+  endDateLocal.value = "";
+
+  ok.value = "Draft deleted.";
+  router.replace({ path: "/create" });
+}
+
+function goDrafts() {
+  router.push("/drafts");
 }
 
 async function submit() {
@@ -94,13 +180,16 @@ async function submit() {
   const sb = Math.floor(Number(startingBid.value));
   const endMs = toMsFromDatetimeLocal(endDateLocal.value);
 
+  if (!isLoggedIn.value) {
+    error.value = "Sign in to publish. (You can still Save Draft.)";
+    return;
+  }
+
   if (!n) return (error.value = "name is required.");
   if (!d) return (error.value = "description is required.");
-  if (!Number.isFinite(sb) || sb < 0)
-    return (error.value = "starting_bid is invalid.");
+  if (!Number.isFinite(sb) || sb < 0) return (error.value = "starting_bid is invalid.");
   if (!endMs) return (error.value = "end_date is invalid.");
-  if (endMs <= Date.now())
-    return (error.value = "end_date must be in the future.");
+  if (endMs <= Date.now()) return (error.value = "end_date must be in the future.");
 
   loading.value = true;
   try {
@@ -108,11 +197,18 @@ async function submit() {
       name: n,
       description: d,
       starting_bid: sb,
-      end_date: endMs, // backend accepts ms
+      end_date: endMs,
     });
 
     const itemId = res?.data?.item_id;
     ok.value = "Auction created!";
+
+    // ✅ If it was a draft, delete it now (mail-client style: sent -> remove draft)
+    if (draftId.value) {
+      deleteDraft(draftId.value);
+      draftId.value = "";
+    }
+
     if (itemId) router.push(`/auction/${itemId}`);
   } catch (e) {
     error.value =
@@ -124,6 +220,9 @@ async function submit() {
     loading.value = false;
   }
 }
+
+onMounted(loadDraftIfAny);
+watch(() => route.query.draft, loadDraftIfAny);
 </script>
 
 <style scoped>
@@ -171,6 +270,12 @@ async function submit() {
   color: rgba(233, 238, 252, 0.7);
   line-height: 1.5;
   font-size: 13px;
+}
+.heroActions {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }
 
 .panel {
@@ -222,6 +327,13 @@ async function submit() {
   resize: vertical;
 }
 
+.rowBtns {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
 .primary {
   margin-top: 6px;
   padding: 12px 16px;
@@ -242,6 +354,18 @@ async function submit() {
 }
 .primary:hover {
   box-shadow: 0 16px 40px rgba(46, 204, 113, 0.18);
+}
+
+.ghost {
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(233, 238, 252, 0.85);
+  cursor: pointer;
+}
+.dangerBtn {
+  border-color: rgba(255, 107, 107, 0.35);
 }
 
 .note {
