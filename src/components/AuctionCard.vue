@@ -2,7 +2,9 @@
   <article class="card">
     <div class="content">
       <div class="topline">
-        <div class="badge">LIVE</div>
+        <div class="badge" :class="{ endedBadge: endsIn === 'Ended' }">
+            {{ endsIn === 'Ended' ? 'ENDED' : 'LIVE' }}
+        </div>
         <div class="idPill">#{{ item.item_id }}</div>
       </div>
       <h3 class="name">{{ item.name }}</h3>
@@ -135,4 +137,9 @@
     .cta:hover{
         box-shadow: 0 16px 40px rgba(46,204,113,.18);
     }
+
+    .endedBadge{
+        background: rgba(255,107,107,.12);
+        border-color: rgba(255,107,107,.35);
+    }   
 </style>

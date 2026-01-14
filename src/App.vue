@@ -18,6 +18,7 @@
 
           <template v-else>
             <div class="who">User #{{ session.userId }}</div>
+            <button class="btnGhost" type="button" @click="router.push('/profile')">Profile</button>
             <button class="btnGhost" type="button" @click="doLogout">Logout</button>
           </template>
         </div>
