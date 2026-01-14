@@ -6,8 +6,12 @@
           <div class="crumb" @click="goHome">← Back to Live Auctions</div>
           <h1 class="title">{{ item?.name || "Auction" }}</h1>
           <p class="sub" v-if="item">
-            Sold by <span class="accent">{{ item.first_name }} {{ item.last_name }}</span>
-            • Ends <span :class="{ danger: endsIn === 'Ended' }">{{ endsIn }}</span>
+            Sold by
+            <span class="accent"
+              >{{ item.first_name }} {{ item.last_name }}</span
+            >
+            • Ends
+            <span :class="{ danger: endsIn === 'Ended' }">{{ endsIn }}</span>
           </p>
         </div>
         <div class="pill">#{{ routeId }}</div>
@@ -22,7 +26,8 @@
           <div class="label">Current Bid</div>
           <div class="value">£{{ item.current_bid }}</div>
           <div class="small" v-if="item.current_bid_holder">
-            Current leader: {{ item.current_bid_holder.first_name }} {{ item.current_bid_holder.last_name }}
+            Current leader: {{ item.current_bid_holder.first_name }}
+            {{ item.current_bid_holder.last_name }}
           </div>
           <div class="small" v-else>No bids yet</div>
         </div>
@@ -35,22 +40,21 @@
       </div>
       <div v-if="error" class="error">
         {{ error }}
-        <button class="ghost" @click="loadAll" :disabled="loading">Retry</button>
+        <button class="ghost" @click="loadAll" :disabled="loading">
+          Retry
+        </button>
       </div>
       <div v-if="loading" class="loading">Loading auction…</div>
     </section>
     <section class="panel" v-if="item">
       <h2 class="h2">Place a Bid</h2>
-      <div v-if="!isLoggedIn" class="note">
-        Sign in to place a bid.
-      </div>
+      <div v-if="!isLoggedIn" class="note">Sign in to place a bid.</div>
       <div v-else-if="isSeller" class="note">
         You can’t bid on your own auction.
       </div>
       <div v-else-if="endsIn === 'Ended'" class="note">
         Auction has ended. Bidding is closed.
       </div>
-
       <form v-else class="formRow" @submit.prevent="placeBid">
         <input
           class="input"
@@ -117,9 +121,7 @@
         </div>
       </div>
       <h3 class="h3">Ask a Question</h3>
-      <div v-if="!isLoggedIn" class="note">
-        Sign in to ask a question.
-      </div>
+      <div v-if="!isLoggedIn" class="note">Sign in to ask a question.</div>
       <div v-else-if="isSeller" class="note">
         You can’t ask questions on your own auction.
       </div>
@@ -138,192 +140,180 @@
 </template>
 
 <script setup>
-    import { computed, onMounted, onUnmounted, ref } from "vue";
-    import { useRoute, useRouter } from "vue-router";
-    import { api } from "../services/api";
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { api } from "../services/api";
 
-    const route = useRoute();
-    const router = useRouter();
-    const routeId = computed(() => route.params.id);
-    const item = ref(null);
-    const bids = ref([]);
-    const questions = ref([]);
-    const loading = ref(false);
-    const error = ref("");
-    const actionLoading = ref(false);
-    const actionError = ref("");
-    const actionOk = ref("");
-    const bidAmount = ref("");
-    const questionText = ref("");
-    const answers = ref({});
-    const isLoggedIn = computed(() => !!localStorage.getItem("session_token"));
-    const myUserId = computed(() => {
-    const v = localStorage.getItem("user_id");
-    const n = Number(v);
-    return Number.isFinite(n) ? n : null;
-    });
-    const isSeller = computed(() => {
-    if (!item.value) return false;
-    if (!myUserId.value) return false;
-    return Number(item.value.creator_id) === Number(myUserId.value);
-    });
+const route = useRoute();
+const router = useRouter();
+const routeId = computed(() => route.params.id);
+const item = ref(null);
+const bids = ref([]);
+const questions = ref([]);
+const loading = ref(false);
+const error = ref("");
+const actionLoading = ref(false);
+const actionError = ref("");
+const actionOk = ref("");
+const bidAmount = ref("");
+const questionText = ref("");
+const answers = ref({});
+const isLoggedIn = computed(() => !!localStorage.getItem("session_token"));
+const myUserId = computed(() => {
+  const v = localStorage.getItem("user_id");
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+});
+const isSeller = computed(() => {
+  if (!item.value) return false;
+  if (!myUserId.value) return false;
+  return Number(item.value.creator_id) === Number(myUserId.value);
+});
 
-    function formatCountdown(endMs) {
-    const diff = Number(endMs) - Date.now();
-    if (!Number.isFinite(diff)) return "—";
-    if (diff <= 0) return "Ended";
-    const h = Math.floor(diff / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    if (h > 0) return `${h}h ${m}m`;
-    return `${m}m ${s}s`;
-    }
-    const endsIn = computed(() => (item.value ? formatCountdown(item.value.end_date) : "—"));
+function formatCountdown(endMs) {
+  const diff = Number(endMs) - Date.now();
+  if (!Number.isFinite(diff)) return "—";
+  if (diff <= 0) return "Ended";
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m ${s}s`;
+}
 
-    function formatTime(ms) {
-    const d = new Date(Number(ms));
-    if (Number.isNaN(d.getTime())) return "—";
-    return d.toLocaleString();
-    }
+const endsIn = computed(() =>
+  item.value ? formatCountdown(item.value.end_date) : "—"
+);
 
-    function goHome() {
-    router.push("/");
-    }
+function formatTime(ms) {
+  const d = new Date(Number(ms));
+  if (Number.isNaN(d.getTime())) return "—";
+  return d.toLocaleString();
+}
 
-    async function loadItem() {
-    const res = await api.get(`/item/${routeId.value}`);
-    item.value = res.data;
-    }
+function goHome() {
+  router.push("/");
+}
 
-    async function loadBids() {
-    const res = await api.get(`/item/${routeId.value}/bid`);
-    bids.value = Array.isArray(res.data) ? res.data : [];
-    }
+async function loadItem() {
+  const res = await api.get(`/item/${routeId.value}`);
+  item.value = res.data;
+}
 
-    async function loadQuestions() {
-    const res = await api.get(`/item/${routeId.value}/question`);
-    questions.value = Array.isArray(res.data) ? res.data : [];
-    }
+async function loadBids() {
+  const res = await api.get(`/item/${routeId.value}/bid`);
+  bids.value = Array.isArray(res.data) ? res.data : [];
+}
 
-    async function loadAll() {
-    loading.value = true;
-    error.value = "";
-    try {
-        await Promise.all([loadItem(), loadBids(), loadQuestions()]);
-    } catch (e) {
-        error.value =
-        e?.response?.data?.error_message ||
-        e?.message ||
-        "Failed to load auction.";
-    } finally {
-        loading.value = false;
-    }
-    }
+async function loadQuestions() {
+  const res = await api.get(`/item/${routeId.value}/question`);
+  questions.value = Array.isArray(res.data) ? res.data : [];
+}
 
-    async function placeBid() {
-    actionError.value = "";
-    actionOk.value = "";
+async function loadAll() {
+  loading.value = true;
+  error.value = "";
+  try {
+    await Promise.all([loadItem(), loadBids(), loadQuestions()]);
+  } catch (e) {
+    error.value =
+      e?.response?.data?.error_message ||
+      e?.message ||
+      "Failed to load auction.";
+  } finally {
+    loading.value = false;
+  }
+}
 
-    const amt = Number(bidAmount.value);
-    if (!Number.isFinite(amt) || Math.floor(amt) !== amt || amt <= 0) {
-        actionError.value = "Bid must be a whole number greater than 0.";
-        return;
-    }
+async function placeBid() {
+  actionError.value = "";
+  actionOk.value = "";
 
-    actionLoading.value = true;
-    try {
-        await api.post(`/item/${routeId.value}/bid`, { amount: amt });
-        actionOk.value = "Bid placed!";
-        bidAmount.value = "";
-        await loadAll();
-    } catch (e) {
-        actionError.value =
-        e?.response?.data?.error_message ||
-        (e?.response?.status === 401 ? "You must be logged in." : "") ||
-        e?.message ||
-        "Failed to place bid.";
-    } finally {
-        actionLoading.value = false;
-    }
-    }
+  const amt = Number(bidAmount.value);
+  if (!Number.isFinite(amt) || Math.floor(amt) !== amt || amt <= 0) {
+    actionError.value = "Bid must be a whole number greater than 0.";
+    return;
+  }
 
-    async function askQuestion() {
-    actionError.value = "";
-    actionOk.value = "";
+  actionLoading.value = true;
+  try {
+    await api.post(`/item/${routeId.value}/bid`, { amount: amt });
+    actionOk.value = "Bid placed!";
+    bidAmount.value = "";
+    await loadAll();
+  } catch (e) {
+    actionError.value =
+      e?.response?.data?.error_message ||
+      (e?.response?.status === 401 ? "You must be logged in." : "") ||
+      e?.message ||
+      "Failed to place bid.";
+  } finally {
+    actionLoading.value = false;
+  }
+}
 
-    const text = questionText.value.trim();
-    if (!text) {
-        actionError.value = "Question cannot be empty.";
-        return;
-    }
+async function askQuestion() {
+  actionError.value = "";
+  actionOk.value = "";
 
-    actionLoading.value = true;
-    try {
-        await api.post(`/item/${routeId.value}/question`, { question_text: text });
-        actionOk.value = "Question submitted!";
-        questionText.value = "";
-        await loadQuestions();
-    } catch (e) {
-        actionError.value =
-        e?.response?.data?.error_message ||
-        (e?.response?.status === 401 ? "You must be logged in." : "") ||
-        e?.message ||
-        "Failed to submit question.";
-    } finally {
-        actionLoading.value = false;
-    }
-    }
+  const text = questionText.value.trim();
+  if (!text) {
+    actionError.value = "Question cannot be empty.";
+    return;
+  }
 
-    async function answerQuestion(questionId) {
-    actionError.value = "";
-    actionOk.value = "";
+  actionLoading.value = true;
+  try {
+    await api.post(`/item/${routeId.value}/question`, { question_text: text });
+    actionOk.value = "Question submitted!";
+    questionText.value = "";
+    await loadQuestions();
+  } catch (e) {
+    actionError.value =
+      e?.response?.data?.error_message ||
+      (e?.response?.status === 401 ? "You must be logged in." : "") ||
+      e?.message ||
+      "Failed to submit question.";
+  } finally {
+    actionLoading.value = false;
+  }
+}
 
-    const text = (answers.value[questionId] || "").trim();
-    if (!text) {
-        actionError.value = "Answer cannot be empty.";
-        return;
-    }
+async function answerQuestion(questionId) {
+  actionError.value = "";
+  actionOk.value = "";
 
-    actionLoading.value = true;
-    try {
-        await api.post(`/question/${questionId}`, { answer_text: text });
-        actionOk.value = "Answer posted!";
-        answers.value[questionId] = "";
-        await loadQuestions();
-    } catch (e) {
-        actionError.value =
-        e?.response?.data?.error_message ||
-        e?.message ||
-        "Failed to post answer.";
-    } finally {
-        actionLoading.value = false;
-    }
-    }
+  const text = (answers.value[questionId] || "").trim();
+  if (!text) {
+    actionError.value = "Answer cannot be empty.";
+    return;
+  }
 
-    /**
-     * optional: refresh countdown UI every second
-     */
-    let timer = null;
-    onMounted(() => {
-    loadAll();
-    timer = setInterval(() => {
-        // triggers computed re-render when time changes
-        if (item.value) item.value = { ...item.value };
-    }, 1000);
-    });
-    onUnmounted(() => {
-    if (timer) clearInterval(timer);
-    });
+  actionLoading.value = true;
+  try {
+    await api.post(`/question/${questionId}`, { answer_text: text });
+    actionOk.value = "Answer posted!";
+    answers.value[questionId] = "";
+    await loadQuestions();
+  } catch (e) {
+    actionError.value =
+      e?.response?.data?.error_message ||
+      e?.message ||
+      "Failed to post answer.";
+  } finally {
+    actionLoading.value = false;
+  }
+}
 </script>
 
 <style scoped>
-.wrap{
+.wrap {
   max-width: 1120px;
   margin: 0 auto;
   padding: 18px 16px 0;
 }
 
-.panel{
+.panel {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 22px;
@@ -331,218 +321,280 @@
   margin-bottom: 14px;
 }
 
-.head{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: 12px;
 }
 
-.crumb{
-  color: rgba(233,238,252,.65);
+.crumb {
+  color: rgba(233, 238, 252, 0.65);
   font-size: 13px;
-  cursor:pointer;
+  cursor: pointer;
   margin-bottom: 6px;
 }
-.crumb:hover{ color: rgba(233,238,252,.9); }
+.crumb:hover {
+  color: rgba(233, 238, 252, 0.9);
+}
 
-.title{
+.title {
   margin: 0;
   font-size: 32px;
   font-weight: 900;
 }
-.sub{
+.sub {
   margin: 8px 0 0;
-  color: rgba(233,238,252,.70);
+  color: rgba(233, 238, 252, 0.7);
   font-size: 13px;
 }
-.accent{
-  background: linear-gradient(90deg, rgba(46,204,113,.95), rgba(59,130,246,.95));
+.accent {
+  background: linear-gradient(
+    90deg,
+    rgba(46, 204, 113, 0.95),
+    rgba(59, 130, 246, 0.95)
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   font-weight: 900;
 }
 
-.pill{
+.pill {
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(0,0,0,.25);
-  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   font-size: 12px;
   white-space: nowrap;
 }
 
-.desc{
+.desc {
   margin: 14px 0 0;
-  color: rgba(233,238,252,.86);
+  color: rgba(233, 238, 252, 0.86);
   line-height: 1.5;
 }
 
-.stats{
+.stats {
   margin-top: 14px;
-  display:grid;
+  display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
 }
-.stat{
+.stat {
   padding: 12px;
   border-radius: 18px;
-  border: 1px solid rgba(255,255,255,.10);
-  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
 }
-.label{ font-size: 12px; color: rgba(233,238,252,.55); }
-.value{ font-size: 18px; font-weight: 900; margin-top: 3px; }
-.small{ margin-top: 6px; font-size: 12px; color: rgba(233,238,252,.70); }
+.label {
+  font-size: 12px;
+  color: rgba(233, 238, 252, 0.55);
+}
+.value {
+  font-size: 18px;
+  font-weight: 900;
+  margin-top: 3px;
+}
+.small {
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(233, 238, 252, 0.7);
+}
 
-.h2{
+.h2 {
   margin: 0 0 10px;
   font-size: 18px;
   font-weight: 900;
 }
-.h3{
+.h3 {
   margin: 14px 0 10px;
   font-size: 14px;
   font-weight: 900;
-  color: rgba(233,238,252,.85);
+  color: rgba(233, 238, 252, 0.85);
 }
 
-.formRow{
-  display:flex;
+.formRow {
+  display: flex;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.input{
+.input {
   flex: 1;
   min-width: 240px;
   padding: 12px 14px;
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.14);
-  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text);
   outline: none;
 }
-.input::placeholder{ color: rgba(233,238,252,.45); }
+.input::placeholder {
+  color: rgba(233, 238, 252, 0.45);
+}
 
-.primary{
+.primary {
   padding: 12px 16px;
   border-radius: 14px;
-  border: 1px solid rgba(46,204,113,.30);
-  background: linear-gradient(90deg, rgba(46,204,113,.95), rgba(59,130,246,.95));
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  background: linear-gradient(
+    90deg,
+    rgba(46, 204, 113, 0.95),
+    rgba(59, 130, 246, 0.95)
+  );
   color: white;
   font-weight: 900;
-  cursor:pointer;
+  cursor: pointer;
 }
-.primary:disabled{ opacity:.6; cursor:not-allowed; }
-.primary:hover{ box-shadow: 0 16px 40px rgba(46,204,113,.18); }
+.primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.primary:hover {
+  box-shadow: 0 16px 40px rgba(46, 204, 113, 0.18);
+}
 
-.ghost{
+.ghost {
   padding: 10px 14px;
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.03);
-  color: rgba(233,238,252,.85);
-  cursor:pointer;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(233, 238, 252, 0.85);
+  cursor: pointer;
 }
 
-.note{
+.note {
   padding: 12px;
   border-radius: 16px;
-  border: 1px dashed rgba(255,255,255,.16);
-  color: rgba(233,238,252,.75);
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  color: rgba(233, 238, 252, 0.75);
   margin-bottom: 10px;
 }
 
-.hint{
+.hint {
   margin-top: 10px;
-  color: rgba(233,238,252,.65);
+  color: rgba(233, 238, 252, 0.65);
   font-size: 12px;
 }
 
-.list{ margin-top: 8px; display:flex; flex-direction:column; gap: 10px; }
-.row{
-  display:flex;
-  justify-content:space-between;
-  gap: 10px;
-  padding: 12px;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,.10);
-  background: rgba(255,255,255,.03);
-}
-.rowTitle{ font-weight: 900; }
-.rowSub{ font-size: 12px; color: rgba(233,238,252,.70); margin-top: 2px; }
-.rowRight{ font-size: 12px; color: rgba(233,238,252,.60); white-space: nowrap; }
-
-.qList{ display:flex; flex-direction:column; gap: 10px; }
-.qCard{
-  padding: 12px;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,.10);
-  background: rgba(255,255,255,.03);
-}
-.qTop{
-  display:flex;
-  justify-content:space-between;
-  gap: 10px;
-  align-items:flex-start;
-}
-.qTitle{ font-weight: 900; }
-.qId{ font-size: 12px; color: rgba(233,238,252,.55); white-space: nowrap; }
-.qAns{
+.list {
   margin-top: 8px;
-  color: rgba(233,238,252,.85);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+}
+.rowTitle {
+  font-weight: 900;
+}
+.rowSub {
+  font-size: 12px;
+  color: rgba(233, 238, 252, 0.7);
+  margin-top: 2px;
+}
+.rowRight {
+  font-size: 12px;
+  color: rgba(233, 238, 252, 0.6);
+  white-space: nowrap;
+}
+
+.qList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.qCard {
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+}
+.qTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+}
+.qTitle {
+  font-weight: 900;
+}
+.qId {
+  font-size: 12px;
+  color: rgba(233, 238, 252, 0.55);
+  white-space: nowrap;
+}
+.qAns {
+  margin-top: 8px;
+  color: rgba(233, 238, 252, 0.85);
   line-height: 1.4;
 }
-.tag{
-  display:inline-block;
+.tag {
+  display: inline-block;
   padding: 2px 8px;
   border-radius: 999px;
   margin-right: 6px;
-  background: rgba(46,204,113,.16);
-  border: 1px solid rgba(46,204,113,.30);
+  background: rgba(46, 204, 113, 0.16);
+  border: 1px solid rgba(46, 204, 113, 0.3);
   font-size: 12px;
   font-weight: 900;
 }
-.muted{ color: rgba(233,238,252,.60); }
-.mutedTag{
-  background: rgba(255,255,255,.08);
-  border-color: rgba(255,255,255,.14);
+.muted {
+  color: rgba(233, 238, 252, 0.6);
+}
+.mutedTag {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
 }
 
-.answerRow{
+.answerRow {
   margin-top: 10px;
-  display:flex;
+  display: flex;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.loading{ padding: 12px; color: rgba(233,238,252,.8); }
+.loading {
+  padding: 12px;
+  color: rgba(233, 238, 252, 0.8);
+}
 
-.error{
+.error {
   padding: 12px;
   border-radius: 16px;
-  border: 1px solid rgba(255,107,107,.35);
-  background: rgba(255,107,107,.10);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  border: 1px solid rgba(255, 107, 107, 0.35);
+  background: rgba(255, 107, 107, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 10px;
   margin-top: 12px;
 }
-.errorSmall{
+.errorSmall {
   margin-top: 10px;
-  color: rgba(255,107,107,.95);
+  color: rgba(255, 107, 107, 0.95);
   font-size: 13px;
 }
-.okSmall{
+.okSmall {
   margin-top: 10px;
-  color: rgba(46,204,113,.95);
+  color: rgba(46, 204, 113, 0.95);
   font-size: 13px;
 }
-.danger{ color: rgba(255,107,107,.95); }
+.danger {
+  color: rgba(255, 107, 107, 0.95);
+}
 
-@media (max-width: 860px){
-  .stats{ grid-template-columns: 1fr; }
+@media (max-width: 860px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

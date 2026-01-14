@@ -6,9 +6,7 @@
           Create Auction
           <span class="heroAccent">List your item</span>
         </h1>
-        <p class="heroSub">
-          Enter the details below and publish your auction.
-        </p>
+        <p class="heroSub">Enter the details below and publish your auction.</p>
       </div>
     </section>
 
@@ -19,7 +17,11 @@
 
       <form v-else class="form" @submit.prevent="submit">
         <label class="label">Name</label>
-        <input class="input" v-model="name" placeholder="e.g. TaylorMade SIM2 Max Driver" />
+        <input
+          class="input"
+          v-model="name"
+          placeholder="e.g. TaylorMade SIM2 Max Driver"
+        />
 
         <label class="label">Description</label>
         <textarea
@@ -31,7 +33,13 @@
         <div class="grid2">
           <div>
             <label class="label">Starting bid (£)</label>
-            <input class="input" v-model="startingBid" type="number" min="0" step="1" />
+            <input
+              class="input"
+              v-model="startingBid"
+              type="number"
+              min="0"
+              step="1"
+            />
           </div>
 
           <div>
@@ -88,9 +96,11 @@ async function submit() {
 
   if (!n) return (error.value = "name is required.");
   if (!d) return (error.value = "description is required.");
-  if (!Number.isFinite(sb) || sb < 0) return (error.value = "starting_bid is invalid.");
+  if (!Number.isFinite(sb) || sb < 0)
+    return (error.value = "starting_bid is invalid.");
   if (!endMs) return (error.value = "end_date is invalid.");
-  if (endMs <= Date.now()) return (error.value = "end_date must be in the future.");
+  if (endMs <= Date.now())
+    return (error.value = "end_date must be in the future.");
 
   loading.value = true;
   try {
@@ -117,43 +127,53 @@ async function submit() {
 </script>
 
 <style scoped>
-.wrap{
+.wrap {
   max-width: 1120px;
   margin: 0 auto;
   padding: 0 16px;
 }
 
-.hero{ padding: 36px 0 18px; }
-.heroInner{
+.hero {
+  padding: 36px 0 18px;
+}
+.heroInner {
   text-align: center;
   padding: 22px 18px;
   border-radius: 26px;
-  background: linear-gradient(90deg, rgba(46,204,113,.10), rgba(59,130,246,.10));
-  border: 1px solid rgba(255,255,255,.10);
+  background: linear-gradient(
+    90deg,
+    rgba(46, 204, 113, 0.1),
+    rgba(59, 130, 246, 0.1)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
-.heroTitle{
+.heroTitle {
   margin: 0;
   font-size: 38px;
   font-weight: 900;
 }
-.heroAccent{
-  display:block;
+.heroAccent {
+  display: block;
   margin-top: 6px;
-  background: linear-gradient(90deg, rgba(46,204,113,.95), rgba(59,130,246,.95));
+  background: linear-gradient(
+    90deg,
+    rgba(46, 204, 113, 0.95),
+    rgba(59, 130, 246, 0.95)
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   font-weight: 900;
 }
-.heroSub{
+.heroSub {
   max-width: 760px;
   margin: 10px auto 0;
-  color: rgba(233,238,252,.70);
+  color: rgba(233, 238, 252, 0.7);
   line-height: 1.5;
   font-size: 13px;
 }
 
-.panel{
+.panel {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 22px;
@@ -161,83 +181,94 @@ async function submit() {
   margin-top: 14px;
 }
 
-.form{
-  display:flex;
-  flex-direction:column;
+.form {
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 }
 
-.grid2{
-  display:grid;
+.grid2 {
+  display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
-@media (max-width: 760px){
-  .grid2{ grid-template-columns: 1fr; }
+@media (max-width: 760px) {
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
 }
 
-.label{
+.label {
   font-size: 12px;
-  color: rgba(233,238,252,.70);
+  color: rgba(233, 238, 252, 0.7);
   font-weight: 800;
   margin-top: 2px;
 }
 
-.input{
+.input {
   padding: 12px 14px;
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.14);
-  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text);
   outline: none;
 }
-.input:focus{
-  border-color: rgba(46,204,113,.35);
-  box-shadow: 0 0 0 3px rgba(46,204,113,.10);
+.input:focus {
+  border-color: rgba(46, 204, 113, 0.35);
+  box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
 }
-.textarea{
+.textarea {
   min-height: 110px;
   resize: vertical;
 }
 
-.primary{
+.primary {
   margin-top: 6px;
   padding: 12px 16px;
   border-radius: 14px;
-  border: 1px solid rgba(46,204,113,.30);
-  background: linear-gradient(90deg, rgba(46,204,113,.95), rgba(59,130,246,.95));
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  background: linear-gradient(
+    90deg,
+    rgba(46, 204, 113, 0.95),
+    rgba(59, 130, 246, 0.95)
+  );
   color: white;
   font-weight: 900;
-  cursor:pointer;
+  cursor: pointer;
 }
-.primary:disabled{ opacity:.6; cursor:not-allowed; }
-.primary:hover{ box-shadow: 0 16px 40px rgba(46,204,113,.18); }
+.primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.primary:hover {
+  box-shadow: 0 16px 40px rgba(46, 204, 113, 0.18);
+}
 
-.note{
+.note {
   padding: 12px;
   border-radius: 16px;
-  border: 1px dashed rgba(255,255,255,.16);
-  color: rgba(233,238,252,.75);
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  color: rgba(233, 238, 252, 0.75);
 }
 
-.hint{
+.hint {
   margin-top: 6px;
-  color: rgba(233,238,252,.60);
+  color: rgba(233, 238, 252, 0.6);
   font-size: 12px;
 }
 
-.error{
+.error {
   padding: 12px;
   border-radius: 16px;
-  border: 1px solid rgba(255,107,107,.35);
-  background: rgba(255,107,107,.10);
-  color: rgba(255,220,220,.95);
+  border: 1px solid rgba(255, 107, 107, 0.35);
+  background: rgba(255, 107, 107, 0.1);
+  color: rgba(255, 220, 220, 0.95);
 }
-.ok{
+.ok {
   padding: 12px;
   border-radius: 16px;
-  border: 1px solid rgba(46,204,113,.30);
-  background: rgba(46,204,113,.10);
-  color: rgba(210,255,230,.95);
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  background: rgba(46, 204, 113, 0.1);
+  color: rgba(210, 255, 230, 0.95);
 }
 </style>

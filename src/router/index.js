@@ -8,7 +8,12 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: "/", name: "home", component: HomeView },
-    { path: "/auction/:id", name: "auction", component: AuctionView, props: true },
+    {
+      path: "/auction/:id",
+      name: "auction",
+      component: AuctionView,
+      props: true,
+    },
     { path: "/profile", name: "profile", component: ProfileView },
     { path: "/create", name: "create", component: CreateAuctionView }, // ✅ add
   ],

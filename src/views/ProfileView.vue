@@ -45,7 +45,11 @@
           </div>
 
           <div v-else class="grid">
-            <AuctionCard v-for="it in profile.selling" :key="it.item_id" :item="it" />
+            <AuctionCard
+              v-for="it in profile.selling"
+              :key="it.item_id"
+              :item="it"
+            />
           </div>
         </section>
 
@@ -61,7 +65,11 @@
           </div>
 
           <div v-else class="grid">
-            <AuctionCard v-for="it in profile.bidding_on" :key="it.item_id" :item="it" />
+            <AuctionCard
+              v-for="it in profile.bidding_on"
+              :key="it.item_id"
+              :item="it"
+            />
           </div>
         </section>
 
@@ -77,11 +85,16 @@
           </div>
 
           <div v-else class="grid">
-            <AuctionCard v-for="it in profile.auctions_ended" :key="it.item_id" :item="it" />
+            <AuctionCard
+              v-for="it in profile.auctions_ended"
+              :key="it.item_id"
+              :item="it"
+            />
           </div>
 
           <div class="hint">
-            Ended auctions will still open in the Auction page (read-only for bidding).
+            Ended auctions will still open in the Auction page (read-only for
+            bidding).
           </div>
         </section>
       </template>
@@ -113,7 +126,10 @@ async function load() {
   try {
     profile.value = await getMyProfile();
   } catch (e) {
-    error.value = e?.response?.data?.error_message || e?.message || "Failed to load profile.";
+    error.value =
+      e?.response?.data?.error_message ||
+      e?.message ||
+      "Failed to load profile.";
   } finally {
     loading.value = false;
   }
@@ -123,43 +139,53 @@ onMounted(load);
 </script>
 
 <style scoped>
-.wrap{
+.wrap {
   max-width: 1120px;
   margin: 0 auto;
   padding: 0 16px;
 }
 
-.hero{ padding: 36px 0 18px; }
-.heroInner{
+.hero {
+  padding: 36px 0 18px;
+}
+.heroInner {
   text-align: center;
   padding: 22px 18px;
   border-radius: 26px;
-  background: linear-gradient(90deg, rgba(46,204,113,.10), rgba(59,130,246,.10));
-  border: 1px solid rgba(255,255,255,.10);
+  background: linear-gradient(
+    90deg,
+    rgba(46, 204, 113, 0.1),
+    rgba(59, 130, 246, 0.1)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
-.heroTitle{
+.heroTitle {
   margin: 0;
   font-size: 38px;
   font-weight: 900;
 }
-.heroAccent{
-  display:block;
+.heroAccent {
+  display: block;
   margin-top: 6px;
-  background: linear-gradient(90deg, rgba(46,204,113,.95), rgba(59,130,246,.95));
+  background: linear-gradient(
+    90deg,
+    rgba(46, 204, 113, 0.95),
+    rgba(59, 130, 246, 0.95)
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   font-weight: 900;
 }
-.heroSub{
+.heroSub {
   max-width: 760px;
   margin: 10px auto 0;
-  color: rgba(233,238,252,.70);
+  color: rgba(233, 238, 252, 0.7);
   line-height: 1.5;
   font-size: 13px;
 }
 
-.panel{
+.panel {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 22px;
@@ -167,76 +193,83 @@ onMounted(load);
   margin-top: 14px;
 }
 
-.panelHead{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+.panelHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 10px;
   margin-bottom: 10px;
 }
 
-.h2{
+.h2 {
   margin: 0;
   font-size: 18px;
   font-weight: 900;
 }
 
-.count{
+.count {
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.03);
-  color: rgba(233,238,252,.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(233, 238, 252, 0.85);
   font-size: 12px;
   font-weight: 800;
 }
 
-.grid{
-  display:grid;
+.grid {
+  display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
 }
 
-@media (max-width: 920px){
-  .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 920px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
-@media (max-width: 560px){
-  .grid{ grid-template-columns: 1fr; }
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-.loading{ padding: 14px; color: rgba(233,238,252,.8); }
+.loading {
+  padding: 14px;
+  color: rgba(233, 238, 252, 0.8);
+}
 
-.note{
+.note {
   padding: 12px;
   border-radius: 16px;
-  border: 1px dashed rgba(255,255,255,.16);
-  color: rgba(233,238,252,.75);
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  color: rgba(233, 238, 252, 0.75);
 }
 
-.hint{
+.hint {
   margin-top: 10px;
-  color: rgba(233,238,252,.65);
+  color: rgba(233, 238, 252, 0.65);
   font-size: 12px;
 }
 
-.error{
+.error {
   margin-top: 14px;
   padding: 12px;
   border-radius: 16px;
-  border: 1px solid rgba(255,107,107,.35);
-  background: rgba(255,107,107,.10);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  border: 1px solid rgba(255, 107, 107, 0.35);
+  background: rgba(255, 107, 107, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 10px;
 }
 
-.ghost{
+.ghost {
   padding: 10px 14px;
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.03);
-  color: rgba(233,238,252,.85);
-  cursor:pointer;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(233, 238, 252, 0.85);
+  cursor: pointer;
 }
 </style>

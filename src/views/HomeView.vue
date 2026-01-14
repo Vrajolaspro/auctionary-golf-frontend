@@ -19,10 +19,12 @@
             placeholder="Search listings (name or description)…"
             autocomplete="off"
           />
-          <button class="searchBtn" type="submit" :disabled="loading">Search</button>
+          <button class="searchBtn" type="submit" :disabled="loading">
+            Search
+          </button>
         </form>
         <button class="heroSellBtn" type="button" @click="goToCreateAuction">
-            Create Auction
+          Create Auction
         </button>
       </div>
     </section>
@@ -34,11 +36,28 @@
           <p class="sectionSub" v-else>Browse active listings from the API</p>
         </div>
         <div class="mini">
-          <button class="ghost" @click="prevPage" :disabled="loading || offset === 0">Prev</button>
-          <button class="ghost" @click="nextPage" :disabled="loading || items.length < limit">Next</button>
+          <button
+            class="ghost"
+            @click="prevPage"
+            :disabled="loading || offset === 0"
+          >
+            Prev
+          </button>
+          <button
+            class="ghost"
+            @click="nextPage"
+            :disabled="loading || items.length < limit"
+          >
+            Next
+          </button>
           <label class="miniLabel">
             Limit
-            <select class="select" v-model.number="limit" :disabled="loading" @change="resetAndLoad">
+            <select
+              class="select"
+              v-model.number="limit"
+              :disabled="loading"
+              @change="resetAndLoad"
+            >
               <option :value="5">5</option>
               <option :value="10">10</option>
               <option :value="20">20</option>
@@ -123,76 +142,88 @@ onMounted(load);
 </script>
 
 <style scoped>
-.wrap{
+.wrap {
   max-width: 1120px;
   margin: 0 auto;
   padding: 0 16px;
 }
-.hero{ 
-    padding: 56px 0 22px; 
+.hero {
+  padding: 56px 0 22px;
 }
-.heroInner{
+.heroInner {
   text-align: center;
   padding: 26px 18px 22px;
   border-radius: 26px;
-  background: linear-gradient(90deg, rgba(46,204,113,.10), rgba(59,130,246,.10));
-  border: 1px solid rgba(255,255,255,.10);
+  background: linear-gradient(
+    90deg,
+    rgba(46, 204, 113, 0.1),
+    rgba(59, 130, 246, 0.1)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
-.heroTitle{
+.heroTitle {
   margin: 0;
   font-size: 44px;
   font-weight: 900;
-  letter-spacing: .2px;
+  letter-spacing: 0.2px;
 }
-.heroAccent{
-  display:block;
+.heroAccent {
+  display: block;
   margin-top: 6px;
-  background: linear-gradient(90deg, rgba(46,204,113,.95), rgba(59,130,246,.95));
+  background: linear-gradient(
+    90deg,
+    rgba(46, 204, 113, 0.95),
+    rgba(59, 130, 246, 0.95)
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
-.heroSub{
+.heroSub {
   max-width: 760px;
   margin: 14px auto 0;
-  color: rgba(233,238,252,.70);
+  color: rgba(233, 238, 252, 0.7);
   line-height: 1.5;
 }
-.heroSearch{
+.heroSearch {
   max-width: 740px;
   margin: 18px auto 0;
   position: relative;
-  display:flex;
-  align-items:center;
+  display: flex;
+  align-items: center;
   gap: 10px;
   padding: 10px 10px 10px 44px;
   border-radius: 18px;
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
 }
-.heroSellBtn{
+.heroSellBtn {
   max-width: 740px;
   width: 100%;
   margin: 12px auto 0;
   display: block;
   padding: 14px 16px;
   border-radius: 18px;
-  border: 1px solid rgba(46,204,113,.30);
-  background: linear-gradient(90deg, rgba(46,204,113,.95), rgba(59,130,246,.95));
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  background: linear-gradient(
+    90deg,
+    rgba(46, 204, 113, 0.95),
+    rgba(59, 130, 246, 0.95)
+  );
   color: white;
   font-weight: 900;
   cursor: pointer;
 }
-.heroSellBtn:hover{
-  box-shadow: 0 16px 40px rgba(46,204,113,.18);
+.heroSellBtn:hover {
+  box-shadow: 0 16px 40px rgba(46, 204, 113, 0.18);
 }
-.searchIcon{
-  position:absolute;
+.searchIcon {
+  position: absolute;
   left: 16px;
-  color: rgba(233,238,252,.45);
+  color: rgba(233, 238, 252, 0.45);
   font-weight: 900;
 }
-.searchInput{
+.searchInput {
   flex: 1;
   min-width: 0;
   border: none;
@@ -202,77 +233,124 @@ onMounted(load);
   font-size: 15px;
   padding: 10px 0;
 }
-.searchInput::placeholder{ color: rgba(233,238,252,.45); }
-.searchBtn{
+.searchInput::placeholder {
+  color: rgba(233, 238, 252, 0.45);
+}
+.searchBtn {
   padding: 12px 16px;
   border-radius: 14px;
-  border: 1px solid rgba(46,204,113,.30);
-  background: linear-gradient(90deg, rgba(46,204,113,.95), rgba(59,130,246,.95));
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  background: linear-gradient(
+    90deg,
+    rgba(46, 204, 113, 0.95),
+    rgba(59, 130, 246, 0.95)
+  );
   color: white;
   font-weight: 800;
-  cursor:pointer;
+  cursor: pointer;
 }
-.searchBtn:disabled{ opacity:.6; cursor:not-allowed; }
-.content{ padding: 18px 0 0; }
-.sectionHead{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-end;
+.searchBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.content {
+  padding: 18px 0 0;
+}
+.sectionHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
   gap: 12px;
   flex-wrap: wrap;
   margin-bottom: 14px;
 }
-.sectionTitle{ margin:0; font-size: 22px; font-weight: 900; }
-.sectionSub{ margin: 6px 0 0; color: rgba(233,238,252,.65); font-size: 13px; }
-.mini{ display:flex; align-items:center; gap: 10px; flex-wrap: wrap; }
-.miniLabel{ font-size: 13px; color: rgba(233,238,252,.70); }
-.select{
+.sectionTitle {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+}
+.sectionSub {
+  margin: 6px 0 0;
+  color: rgba(233, 238, 252, 0.65);
+  font-size: 13px;
+}
+.mini {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.miniLabel {
+  font-size: 13px;
+  color: rgba(233, 238, 252, 0.7);
+}
+.select {
   margin-left: 8px;
   padding: 9px 10px;
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
   color: var(--text);
 }
-.ghost{
+.ghost {
   padding: 10px 14px;
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.03);
-  color: rgba(233,238,252,.85);
-  cursor:pointer;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(233, 238, 252, 0.85);
+  cursor: pointer;
 }
-.ghost:disabled{ opacity:.6; cursor:not-allowed; }
-.grid{
-  display:grid;
+.ghost:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.grid {
+  display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
 }
-@media (max-width: 920px){
-  .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .heroTitle{ font-size: 38px; }
+@media (max-width: 920px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .heroTitle {
+    font-size: 38px;
+  }
 }
-@media (max-width: 560px){
-  .grid{ grid-template-columns: 1fr; }
-  .heroTitle{ font-size: 32px; }
-  .heroSearch{ flex-direction: column; align-items: stretch; padding-left: 44px; }
-  .searchBtn{ width: 100%; }
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .heroTitle {
+    font-size: 32px;
+  }
+  .heroSearch {
+    flex-direction: column;
+    align-items: stretch;
+    padding-left: 44px;
+  }
+  .searchBtn {
+    width: 100%;
+  }
 }
-.loading{ padding: 14px; color: rgba(233,238,252,.8); }
-.empty{
+.loading {
+  padding: 14px;
+  color: rgba(233, 238, 252, 0.8);
+}
+.empty {
   padding: 16px;
   border-radius: 18px;
-  border: 1px dashed rgba(255,255,255,.16);
-  color: rgba(233,238,252,.75);
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  color: rgba(233, 238, 252, 0.75);
 }
-.error{
+.error {
   padding: 12px;
   border-radius: 16px;
-  border: 1px solid rgba(255,107,107,.35);
-  background: rgba(255,107,107,.10);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  border: 1px solid rgba(255, 107, 107, 0.35);
+  background: rgba(255, 107, 107, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 10px;
   margin-bottom: 14px;
 }
